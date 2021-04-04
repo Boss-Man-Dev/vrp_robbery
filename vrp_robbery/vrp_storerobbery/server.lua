@@ -91,7 +91,7 @@ function store_robbery.tunnel:startRobbery(robb)
 				if #cops >= s_robbery.cops then
 					if last_store[robb] then
 						local past = os.time() - last_store[robb]
-						local wait = s_robbery.rob + s_robbery.wait
+						local wait = s_robbery.wait
 						if past <  wait then
 							TriggerClientEvent('chatMessage', player, self.lang.common.title(), {255, 0, 0}, self.lang.common.wait.opt_1({wait - past}))
 							self.remote._StoreRobberyComplete(player)
@@ -102,7 +102,7 @@ function store_robbery.tunnel:startRobbery(robb)
 						local f_hold
 						amount = s_robbery.rob/60
 						f_hold = round(amount, 0)
-						TriggerClientEvent('chatMessage', player, self.lang.news.rob.header(), {255, 0, 0}, self.lang.news.rob.body({s_robbery.name}))
+						TriggerClientEvent('chatMessage', -1, self.lang.news.rob.header(), {255, 0, 0}, self.lang.news.rob.body({s_robbery.name}))
 						TriggerEvent("cooldownt")
 						last_store[robb] = os.time()
 						store_robbers[player] = robb
@@ -129,7 +129,7 @@ function store_robbery.tunnel:startRobbery(robb)
 									info.main 	= self.lang.news.body({s_robbery.name})
 									info.footer = self.lang.news.footer({formatted})
 									info.header = self.lang.news.heading()
-									self.remote._NewsBulletin(user.source,info)
+									self.remote._NewsBulletin(-1, info)
 								end
 							end
 						end)
