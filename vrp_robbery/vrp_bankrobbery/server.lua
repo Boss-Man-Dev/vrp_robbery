@@ -77,32 +77,34 @@ end
 --[[##########################--]]
 function bank_robbery.tunnel:startBankRobbery(b_rob)
 	local user = vRP.users_by_source[source]
-	
+	local canceled = false
+	local player = source
+	local cops = vRP.EXT.Group:getUsersByPermission(self.cfg.cops)
+	local b_robbery = self.cfg.banks[b_rob]
+		
 	if user and user:isReady() then
-		local canceled = false
-		local player = source
-		local cops = vRP.EXT.Group:getUsersByPermission(self.cfg.cops)
-		local b_robbery = self.cfg.banks[b_rob]
 		if user:hasPermission(self.cfg.cops) then
 			self.remote._BankRobberyComplete(player)
 			vRP.EXT.Base.remote._notify(user.source, self.lang.cops.cop_3())
 		else
-			if b_robbery then
+			if b_rob then
 				if #cops >= b_robbery.cops then
 					if last_bank[b_rob] then
 						local past = os.time() - last_bank[b_rob]
-						local wait = b_robbery.rob + b_robbery.wait
+						local wait = b_robbery.wait
 						if past <  wait then
 							TriggerClientEvent('chatMessage', player, self.lang.common.title(), {255, 0, 0}, self.lang.common.wait.opt_1({wait - past}))
 							self.remote._BankRobberyComplete(player)
 							canceled = true
+						else
+							canceled = false
 						end
 					end
 					if not canceled then
 						local f_hold
 						amount = b_robbery.rob/60
 						f_hold = round(amount, 0)
-						TriggerClientEvent('chatMessage', player, self.lang.news.rob.header(), {255, 0, 0}, self.lang.news.rob.body({b_robbery.name}))
+						TriggerClientEvent('chatMessage', -1, self.lang.news.rob.header(), {255, 0, 0}, self.lang.news.rob.body({b_robbery.name}))
 						TriggerEvent("cooldownt")
 						last_bank[b_rob] = os.time()
 						bank_robbers[player] = b_rob
@@ -129,7 +131,7 @@ function bank_robbery.tunnel:startBankRobbery(b_rob)
 									info.main 	= self.lang.news.body({b_robbery.name})
 									info.footer = self.lang.news.footer({formatted})
 									info.header = self.lang.news.heading()
-									self.remote._NewsBulletin(user.source,info)
+									self.remote._NewsBulletin(-1, info)
 								end
 							end
 						end)
